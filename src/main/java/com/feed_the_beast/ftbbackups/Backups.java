@@ -49,7 +49,7 @@ public enum Backups
 		doingBackup = 0;
 		backups.clear();
 
-		File file = new File(FMLCommonHandler.instance().getMinecraftServerInstance().getFolderName(), "local/ftbutilities/backups.json");
+		File file = FMLCommonHandler.instance().getMinecraftServerInstance().getFile("local/ftbutilities/backups.json");
 
 		if (!file.exists())
 		{
@@ -419,7 +419,7 @@ public enum Backups
 			array.add(backup1.toJsonObject());
 		}
 
-		BackupUtils.toJson(new File(server.getFolderName(), "local/ftbutilities/backups.json"), array, true);
+		BackupUtils.toJson(server.getFile("local/ftbutilities/backups.json"), array, true);
 
 		if (error == null && !FTBBackupsConfig.general.silent)
 		{

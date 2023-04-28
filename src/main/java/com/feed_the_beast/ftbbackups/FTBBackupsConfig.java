@@ -99,7 +99,7 @@ public class FTBBackupsConfig
 
 		public File getFolder() {
 			if (cachedFolder == null) {
-				cachedFolder = FTBBackupsConfig.general.folder.trim().isEmpty() ? new File(FMLCommonHandler.instance().getMinecraftServerInstance().getFolderName(), "backups") : new File(FTBBackupsConfig.general.folder.trim());
+				cachedFolder = FTBBackupsConfig.general.folder.trim().isEmpty() ? FMLCommonHandler.instance().getMinecraftServerInstance().getFile("backups") : new File(FTBBackupsConfig.general.folder.trim());
 			}
 
 			return cachedFolder;
@@ -111,7 +111,7 @@ public class FTBBackupsConfig
 	}
 
 	@SubscribeEvent
-	public static void onConfigChanged(ConfigChangedEvent.OnConfigChangedEvent event) {
+	public void onConfigChanged(ConfigChangedEvent.OnConfigChangedEvent event) {
 		if (event.modID.equals(FTBBackups.MOD_ID)) {
 			sync();
 		}

@@ -14,14 +14,14 @@ public class FTBBackupsClientEventHandler
 	public static int totalBackupFiles = 0;
 
 	@SubscribeEvent
-	public static void onClientDisconnected(FMLNetworkEvent.ClientDisconnectionFromServerEvent event)
+	public void onClientDisconnected(FMLNetworkEvent.ClientDisconnectionFromServerEvent event)
 	{
 		currentBackupFile = 0;
 		totalBackupFiles = 0;
 	}
 
 	@SubscribeEvent
-	public static void onDebugInfoEvent(RenderGameOverlayEvent.Text event)
+	public void onDebugInfoEvent(RenderGameOverlayEvent.Text event)
 	{
 		if (Minecraft.getMinecraft().gameSettings.showDebugInfo)
 		{

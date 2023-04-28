@@ -49,6 +49,7 @@ public class FTBBackups
 		FTBBackupsNetHandler.init();
 		FTBBackupsConfig.init(event);
 
+		FMLCommonHandler.instance().bus().register(this);
 		MinecraftForge.EVENT_BUS.register(FTBBackupsConfig.INST);
 		if (FMLCommonHandler.instance().getSide() == Side.CLIENT) {
 			FMLCommonHandler.instance().bus().register(FTBBackupsClientEventHandler.INST);
@@ -83,7 +84,7 @@ public class FTBBackups
 	}
 
 	@SubscribeEvent
-	public static void onServerTick(TickEvent.ServerTickEvent event)
+	public void onServerTick(TickEvent.ServerTickEvent event)
 	{
 		if (event.phase != TickEvent.Phase.START)
 		{
@@ -97,7 +98,7 @@ public class FTBBackups
 	}
 
 	@SubscribeEvent
-	public static void onPlayerLoggedOut(PlayerEvent.PlayerLoggedOutEvent event)
+	public void onPlayerLoggedOut(PlayerEvent.PlayerLoggedOutEvent event)
 	{
 		Backups.INSTANCE.hadPlayersOnline = true;
 	}
