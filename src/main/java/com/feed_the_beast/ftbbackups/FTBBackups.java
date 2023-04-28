@@ -47,6 +47,9 @@ public class FTBBackups
 	public void onPreInit(FMLPreInitializationEvent event)
 	{
 		FTBBackupsNetHandler.init();
+		FTBBackupsConfig.init(event);
+
+		MinecraftForge.EVENT_BUS.register(FTBBackupsConfig.INST);
 		if (FMLCommonHandler.instance().getSide() == Side.CLIENT) {
 			FMLCommonHandler.instance().bus().register(FTBBackupsClientEventHandler.INST);
 			MinecraftForge.EVENT_BUS.register(FTBBackupsClientEventHandler.INST);
