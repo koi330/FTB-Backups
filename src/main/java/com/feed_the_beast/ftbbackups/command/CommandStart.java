@@ -1,7 +1,8 @@
-package com.feed_the_beast.mods.ftbbackups.command;
+package com.feed_the_beast.ftbbackups.command;
 
-import com.feed_the_beast.mods.ftbbackups.Backups;
-import com.feed_the_beast.mods.ftbbackups.FTBBackups;
+import com.feed_the_beast.ftbbackups.Backups;
+import com.feed_the_beast.ftbbackups.FTBBackups;
+
 import net.minecraft.command.CommandBase;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.entity.player.EntityPlayerMP;

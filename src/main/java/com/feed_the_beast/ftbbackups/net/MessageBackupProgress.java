@@ -1,6 +1,6 @@
-package com.feed_the_beast.mods.ftbbackups.net;
+package com.feed_the_beast.ftbbackups.net;
 
-import com.feed_the_beast.mods.ftbbackups.FTBBackupsClientEventHandler;
+import com.feed_the_beast.ftbbackups.FTBBackupsClientEventHandler;
 import io.netty.buffer.ByteBuf;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;

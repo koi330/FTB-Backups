@@ -1,4 +1,4 @@
-package com.feed_the_beast.mods.ftbbackups;
+package com.feed_the_beast.ftbbackups;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.resources.I18n;

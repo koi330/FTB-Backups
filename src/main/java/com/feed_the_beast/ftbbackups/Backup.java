@@ -1,4 +1,4 @@
-package com.feed_the_beast.mods.ftbbackups;
+package com.feed_the_beast.ftbbackups;
 
 import com.google.gson.JsonObject;
 

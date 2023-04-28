@@ -1,10 +1,11 @@
-package com.feed_the_beast.mods.ftbbackups.command;
+package com.feed_the_beast.ftbbackups.command;
 
-import com.feed_the_beast.mods.ftbbackups.Backup;
-import com.feed_the_beast.mods.ftbbackups.BackupUtils;
-import com.feed_the_beast.mods.ftbbackups.Backups;
-import com.feed_the_beast.mods.ftbbackups.FTBBackups;
-import com.feed_the_beast.mods.ftbbackups.FTBBackupsConfig;
+import com.feed_the_beast.ftbbackups.Backup;
+import com.feed_the_beast.ftbbackups.BackupUtils;
+import com.feed_the_beast.ftbbackups.Backups;
+import com.feed_the_beast.ftbbackups.FTBBackups;
+import com.feed_the_beast.ftbbackups.FTBBackupsConfig;
+
 import net.minecraft.command.CommandBase;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.server.MinecraftServer;

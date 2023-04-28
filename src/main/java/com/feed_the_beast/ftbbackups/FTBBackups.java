@@ -1,7 +1,8 @@
-package com.feed_the_beast.mods.ftbbackups;
+package com.feed_the_beast.ftbbackups;
 
-import com.feed_the_beast.mods.ftbbackups.command.CommandBackup;
-import com.feed_the_beast.mods.ftbbackups.net.FTBBackupsNetHandler;
+import com.feed_the_beast.ftbbackups.net.FTBBackupsNetHandler;
+import com.feed_the_beast.ftbbackups.command.CommandBackup;
+
 import net.minecraft.command.ICommandSender;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.text.ITextComponent;

@@ -1,4 +1,4 @@
-package com.feed_the_beast.mods.ftbbackups.command;
+package com.feed_the_beast.ftbbackups.command;
 
 import net.minecraft.command.ICommandSender;
 import net.minecraft.server.MinecraftServer;

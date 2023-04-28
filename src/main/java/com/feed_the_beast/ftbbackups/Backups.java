@@ -1,7 +1,7 @@
-package com.feed_the_beast.mods.ftbbackups;
+package com.feed_the_beast.ftbbackups;
 
-import com.feed_the_beast.mods.ftbbackups.net.FTBBackupsNetHandler;
-import com.feed_the_beast.mods.ftbbackups.net.MessageBackupProgress;
+import com.feed_the_beast.ftbbackups.net.FTBBackupsNetHandler;
+import com.feed_the_beast.ftbbackups.net.MessageBackupProgress;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
