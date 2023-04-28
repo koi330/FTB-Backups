@@ -1,6 +1,6 @@
 package com.feed_the_beast.ftbbackups;
 
-import net.minecraftforge.fml.common.eventhandler.Event;
+import cpw.mods.fml.common.eventhandler.Event;
 
 import javax.annotation.Nullable;
 import java.io.File;

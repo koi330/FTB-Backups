@@ -1,23 +1,27 @@
 package com.feed_the_beast.ftbbackups;
 
 import com.feed_the_beast.ftbbackups.net.FTBBackupsNetHandler;
-import com.feed_the_beast.ftbbackups.command.CommandBackup;
+import com.feed_the_beast.ftbbackups.command.CmdBackup;
 
 import net.minecraft.command.ICommandSender;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.TextComponentTranslation;
-import net.minecraftforge.fml.common.FMLCommonHandler;
-import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
-import net.minecraftforge.fml.common.event.FMLServerStartedEvent;
-import net.minecraftforge.fml.common.event.FMLServerStartingEvent;
-import net.minecraftforge.fml.common.event.FMLServerStoppingEvent;
-import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
-import net.minecraftforge.fml.common.gameevent.PlayerEvent;
-import net.minecraftforge.fml.common.gameevent.TickEvent;
+import net.minecraft.util.IChatComponent;
+import cpw.mods.fml.common.FMLCommonHandler;
+import cpw.mods.fml.common.Mod;
+import cpw.mods.fml.common.event.FMLPreInitializationEvent;
+import cpw.mods.fml.common.event.FMLServerStartedEvent;
+import cpw.mods.fml.common.event.FMLServerStartingEvent;
+import cpw.mods.fml.common.event.FMLServerStoppingEvent;
+import cpw.mods.fml.common.eventhandler.SubscribeEvent;
+import cpw.mods.fml.common.gameevent.PlayerEvent;
+import cpw.mods.fml.common.gameevent.TickEvent;
+import cpw.mods.fml.relauncher.Side;
+
+import com.feed_the_beast.ftblib.lib.util.SidedUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+
+import net.minecraftforge.common.MinecraftForge;
 
 import javax.annotation.Nullable;
 
@@ -27,30 +31,32 @@ import javax.annotation.Nullable;
 		version = FTBBackups.VERSION,
 		acceptableRemoteVersions = "*"
 )
-@Mod.EventBusSubscriber
 public class FTBBackups
 {
 	public static final String MOD_ID = "ftbbackups";
 	public static final String MOD_NAME = "FTB Backups";
-	public static final String VERSION = "0.0.0.ftbbackups";
+	public static final String VERSION = "GRADLETOKEN_VERSION";
 	public static final Logger LOGGER = LogManager.getLogger(MOD_NAME);
 
-	public static ITextComponent lang(@Nullable ICommandSender sender, String key, Object... args)
+	public static IChatComponent lang(@Nullable ICommandSender sender, String key, Object... args)
 	{
-		//return SidedUtils.lang(sender, MOD_ID, key, args);
-		return new TextComponentTranslation(key, args); //FIXME
+		return SidedUtils.lang(sender, MOD_ID, key, args);
 	}
 
 	@Mod.EventHandler
 	public void onPreInit(FMLPreInitializationEvent event)
 	{
 		FTBBackupsNetHandler.init();
+		if (FMLCommonHandler.instance().getSide() == Side.CLIENT) {
+			FMLCommonHandler.instance().bus().register(FTBBackupsClientEventHandler.INST);
+			MinecraftForge.EVENT_BUS.register(FTBBackupsClientEventHandler.INST);
+		}
 	}
 
 	@Mod.EventHandler
 	public void onServerStarting(FMLServerStartingEvent event)
 	{
-		event.registerServerCommand(new CommandBackup());
+		event.registerServerCommand(new CmdBackup());
 	}
 
 	@Mod.EventHandler

@@ -5,15 +5,16 @@ import com.feed_the_beast.ftbbackups.net.MessageBackupProgress;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+
+import cpw.mods.fml.common.FMLCommonHandler;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.TextFormatting;
+import net.minecraft.util.EnumChatFormatting;
+import net.minecraft.util.IChatComponent;
 import net.minecraft.world.WorldServer;
 import net.minecraft.world.storage.ThreadedFileIOBase;
 import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.fml.common.FMLCommonHandler;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -48,7 +49,7 @@ public enum Backups
 		doingBackup = 0;
 		backups.clear();
 
-		File file = new File(FMLCommonHandler.instance().getMinecraftServerInstance().getDataDirectory(), "local/ftbutilities/backups.json");
+		File file = new File(FMLCommonHandler.instance().getMinecraftServerInstance().getFolderName(), "local/ftbutilities/backups.json");
 
 		if (!file.exists())
 		{
@@ -92,7 +93,7 @@ public enum Backups
 	{
 		if (nextBackup > 0L && nextBackup <= now)
 		{
-			if (!FTBBackupsConfig.general.only_if_players_online || hadPlayersOnline || !server.getPlayerList().getPlayers().isEmpty())
+			if (!FTBBackupsConfig.general.only_if_players_online || hadPlayersOnline || !server.getConfigurationManager().playerEntityList.isEmpty())
 			{
 				hadPlayersOnline = false;
 				run(server, server, "");
@@ -105,11 +106,11 @@ public enum Backups
 
 			if (FTBBackupsConfig.general.disable_level_saving)
 			{
-				for (WorldServer world : server.worlds)
+				for (WorldServer world : server.worldServers)
 				{
 					if (world != null)
 					{
-						world.disableLevelSaving = false;
+						world.levelSaving = false;
 					}
 				}
 			}
@@ -133,18 +134,18 @@ public enum Backups
 		}
 	}
 
-	public void notifyAll(MinecraftServer server, Function<ICommandSender, ITextComponent> function, boolean error)
+	public void notifyAll(MinecraftServer server, Function<ICommandSender, IChatComponent> function, boolean error)
 	{
-		for (EntityPlayerMP player : server.getPlayerList().getPlayers())
+		for (EntityPlayerMP player : (List<EntityPlayerMP>) server.getConfigurationManager().playerEntityList)
 		{
-			ITextComponent component = function.apply(player);
-			component.getStyle().setColor(error ? TextFormatting.DARK_RED : TextFormatting.LIGHT_PURPLE);
-			player.sendMessage(component);
+			IChatComponent component = function.apply(player);
+			component.getChatStyle().setColor(error ? EnumChatFormatting.DARK_RED : EnumChatFormatting.LIGHT_PURPLE);
+			player.addChatMessage(component);
 		}
 
-		ITextComponent component = function.apply(null);
-		component.getStyle().setColor(error ? TextFormatting.DARK_RED : TextFormatting.LIGHT_PURPLE);
-		server.sendMessage(component);
+		IChatComponent component = function.apply(null);
+		component.getChatStyle().setColor(error ? EnumChatFormatting.DARK_RED : EnumChatFormatting.LIGHT_PURPLE);
+		server.addChatMessage(component);
 	}
 
 	public boolean run(MinecraftServer server, ICommandSender sender, String customName)
@@ -161,23 +162,23 @@ public enum Backups
 			return false;
 		}
 
-		notifyAll(server, player -> FTBBackups.lang(player, "ftbbackups.lang.start", sender.getName()), false);
+		notifyAll(server, player -> FTBBackups.lang(player, "ftbbackups.lang.start", sender.getCommandSenderName()), false);
 		nextBackup = System.currentTimeMillis() + FTBBackupsConfig.general.time();
 
 		if (FTBBackupsConfig.general.disable_level_saving)
 		{
-			for (WorldServer world : server.worlds)
+			for (WorldServer world : server.worldServers)
 			{
 				if (world != null)
 				{
-					world.disableLevelSaving = true;
+					world.levelSaving = true;
 				}
 			}
 		}
 
 		doingBackup = 1;
 
-		ThreadedFileIOBase.getThreadedIOInstance().queueIO(() ->
+		ThreadedFileIOBase.threadedIOInstance.queueIO(() ->
 		{
 			try
 			{
@@ -197,16 +198,16 @@ public enum Backups
 
 	private void doBackup(MinecraftServer server, String customName)
 	{
-		File src = server.getWorld(0).getSaveHandler().getWorldDirectory();
+		File src = server.worldServers[0].getSaveHandler().getWorldDirectory();
 
 		try
 		{
-			if (server.getPlayerList() != null)
+			if (server.getConfigurationManager() != null)
 			{
-				server.getPlayerList().saveAllPlayerData();
+				server.getConfigurationManager().saveAllPlayerData();
 			}
 
-			for (WorldServer world : server.worlds)
+			for (WorldServer world : server.worldServers)
 			{
 				if (world != null)
 				{
@@ -246,7 +247,7 @@ public enum Backups
 		try
 		{
 			LinkedHashMap<File, String> fileMap = new LinkedHashMap<>();
-			String mcdir = server.getDataDirectory().getCanonicalFile().getAbsolutePath();
+			String mcdir = new File(server.getFolderName()).getCanonicalFile().getAbsolutePath();
 
 			Consumer<File> consumer = file0 -> {
 				for (File file : BackupUtils.listTree(file0))
@@ -418,7 +419,7 @@ public enum Backups
 			array.add(backup1.toJsonObject());
 		}
 
-		BackupUtils.toJson(new File(server.getDataDirectory(), "local/ftbutilities/backups.json"), array, true);
+		BackupUtils.toJson(new File(server.getFolderName(), "local/ftbutilities/backups.json"), array, true);
 
 		if (error == null && !FTBBackupsConfig.general.silent)
 		{
