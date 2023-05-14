@@ -1,51 +1,47 @@
 package com.feed_the_beast.ftbbackups;
 
-import cpw.mods.fml.common.eventhandler.Event;
-
-import javax.annotation.Nullable;
 import java.io.File;
 import java.util.function.Consumer;
+
+import javax.annotation.Nullable;
+
+import cpw.mods.fml.common.eventhandler.Event;
 
 /**
  * @author LatvianModder
  */
-public class BackupEvent extends Event
-{
-	public static class Pre extends BackupEvent
-	{
-		private final Consumer<File> callback;
+public class BackupEvent extends Event {
 
-		public Pre(Consumer<File> c)
-		{
-			callback = c;
-		}
+    public static class Pre extends BackupEvent {
 
-		public void add(File file)
-		{
-			callback.accept(file);
-		}
-	}
+        private final Consumer<File> callback;
 
-	public static class Post extends BackupEvent
-	{
-		private final Backup backup;
-		private final Exception error;
+        public Pre(Consumer<File> c) {
+            callback = c;
+        }
 
-		public Post(Backup b, @Nullable Exception ex)
-		{
-			backup = b;
-			error = ex;
-		}
+        public void add(File file) {
+            callback.accept(file);
+        }
+    }
 
-		public Backup getBackup()
-		{
-			return backup;
-		}
+    public static class Post extends BackupEvent {
 
-		@Nullable
-		public Exception getError()
-		{
-			return error;
-		}
-	}
+        private final Backup backup;
+        private final Exception error;
+
+        public Post(Backup b, @Nullable Exception ex) {
+            backup = b;
+            error = ex;
+        }
+
+        public Backup getBackup() {
+            return backup;
+        }
+
+        @Nullable
+        public Exception getError() {
+            return error;
+        }
+    }
 }

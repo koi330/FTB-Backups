@@ -1,11 +1,19 @@
 package com.feed_the_beast.ftbbackups;
 
-import com.feed_the_beast.ftbbackups.net.FTBBackupsNetHandler;
-import com.feed_the_beast.ftbbackups.command.CmdBackup;
+import javax.annotation.Nullable;
 
 import net.minecraft.command.ICommandSender;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.IChatComponent;
+import net.minecraftforge.common.MinecraftForge;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
+import com.feed_the_beast.ftbbackups.command.CmdBackup;
+import com.feed_the_beast.ftbbackups.net.FTBBackupsNetHandler;
+import com.feed_the_beast.ftblib.lib.util.SidedUtils;
+
 import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.Mod;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
@@ -17,89 +25,69 @@ import cpw.mods.fml.common.gameevent.PlayerEvent;
 import cpw.mods.fml.common.gameevent.TickEvent;
 import cpw.mods.fml.relauncher.Side;
 
-import com.feed_the_beast.ftblib.lib.util.SidedUtils;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-
-import net.minecraftforge.common.MinecraftForge;
-
-import javax.annotation.Nullable;
-
 @Mod(
-		modid = FTBBackups.MOD_ID,
-		name = FTBBackups.MOD_NAME,
-		version = FTBBackups.VERSION,
-		acceptableRemoteVersions = "*"
-)
-public class FTBBackups
-{
-	public static final String MOD_ID = "ftbbackups";
-	public static final String MOD_NAME = "FTB Backups";
-	public static final String VERSION = "GRADLETOKEN_VERSION";
-	public static final Logger LOGGER = LogManager.getLogger(MOD_NAME);
+        modid = FTBBackups.MOD_ID,
+        name = FTBBackups.MOD_NAME,
+        version = FTBBackups.VERSION,
+        acceptableRemoteVersions = "*")
+public class FTBBackups {
 
-	public static IChatComponent lang(@Nullable ICommandSender sender, String key, Object... args)
-	{
-		return SidedUtils.lang(sender, MOD_ID, key, args);
-	}
+    public static final String MOD_ID = "ftbbackups";
+    public static final String MOD_NAME = "FTB Backups";
+    public static final String VERSION = "GRADLETOKEN_VERSION";
+    public static final Logger LOGGER = LogManager.getLogger(MOD_NAME);
 
-	@Mod.EventHandler
-	public void onPreInit(FMLPreInitializationEvent event)
-	{
-		FTBBackupsNetHandler.init();
-		FTBBackupsConfig.init(event);
+    public static IChatComponent lang(@Nullable ICommandSender sender, String key, Object... args) {
+        return SidedUtils.lang(sender, MOD_ID, key, args);
+    }
 
-		FMLCommonHandler.instance().bus().register(this);
-		MinecraftForge.EVENT_BUS.register(FTBBackupsConfig.INST);
-		if (FMLCommonHandler.instance().getSide() == Side.CLIENT) {
-			FMLCommonHandler.instance().bus().register(FTBBackupsClientEventHandler.INST);
-			MinecraftForge.EVENT_BUS.register(FTBBackupsClientEventHandler.INST);
-		}
-	}
+    @Mod.EventHandler
+    public void onPreInit(FMLPreInitializationEvent event) {
+        FTBBackupsNetHandler.init();
+        FTBBackupsConfig.init(event);
 
-	@Mod.EventHandler
-	public void onServerStarting(FMLServerStartingEvent event)
-	{
-		event.registerServerCommand(new CmdBackup());
-	}
+        FMLCommonHandler.instance().bus().register(this);
+        MinecraftForge.EVENT_BUS.register(FTBBackupsConfig.INST);
+        if (FMLCommonHandler.instance().getSide() == Side.CLIENT) {
+            FMLCommonHandler.instance().bus().register(FTBBackupsClientEventHandler.INST);
+            MinecraftForge.EVENT_BUS.register(FTBBackupsClientEventHandler.INST);
+        }
+    }
 
-	@Mod.EventHandler
-	public void onServerStarted(FMLServerStartedEvent event)
-	{
-		Backups.INSTANCE.init();
-	}
+    @Mod.EventHandler
+    public void onServerStarting(FMLServerStartingEvent event) {
+        event.registerServerCommand(new CmdBackup());
+    }
 
-	@Mod.EventHandler
-	public void onServerStopping(FMLServerStoppingEvent event)
-	{
-		if (FTBBackupsConfig.general.force_on_shutdown)
-		{
-			MinecraftServer server = FMLCommonHandler.instance().getMinecraftServerInstance();
+    @Mod.EventHandler
+    public void onServerStarted(FMLServerStartedEvent event) {
+        Backups.INSTANCE.init();
+    }
 
-			if (server != null)
-			{
-				Backups.INSTANCE.run(server, server, "");
-			}
-		}
-	}
+    @Mod.EventHandler
+    public void onServerStopping(FMLServerStoppingEvent event) {
+        if (FTBBackupsConfig.general.force_on_shutdown) {
+            MinecraftServer server = FMLCommonHandler.instance().getMinecraftServerInstance();
 
-	@SubscribeEvent
-	public void onServerTick(TickEvent.ServerTickEvent event)
-	{
-		if (event.phase != TickEvent.Phase.START)
-		{
-			MinecraftServer server = FMLCommonHandler.instance().getMinecraftServerInstance();
+            if (server != null) {
+                Backups.INSTANCE.run(server, server, "");
+            }
+        }
+    }
 
-			if (server != null)
-			{
-				Backups.INSTANCE.tick(server, System.currentTimeMillis());
-			}
-		}
-	}
+    @SubscribeEvent
+    public void onServerTick(TickEvent.ServerTickEvent event) {
+        if (event.phase != TickEvent.Phase.START) {
+            MinecraftServer server = FMLCommonHandler.instance().getMinecraftServerInstance();
 
-	@SubscribeEvent
-	public void onPlayerLoggedOut(PlayerEvent.PlayerLoggedOutEvent event)
-	{
-		Backups.INSTANCE.hadPlayersOnline = true;
-	}
+            if (server != null) {
+                Backups.INSTANCE.tick(server, System.currentTimeMillis());
+            }
+        }
+    }
+
+    @SubscribeEvent
+    public void onPlayerLoggedOut(PlayerEvent.PlayerLoggedOutEvent event) {
+        Backups.INSTANCE.hadPlayersOnline = true;
+    }
 }

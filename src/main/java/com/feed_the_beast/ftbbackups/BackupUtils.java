@@ -1,15 +1,5 @@
 package com.feed_the_beast.ftbbackups;
 
-import com.google.gson.JsonElement;
-import com.google.gson.JsonIOException;
-import com.google.gson.JsonNull;
-import com.google.gson.JsonSyntaxException;
-import com.google.gson.internal.Streams;
-import com.google.gson.stream.JsonReader;
-import com.google.gson.stream.JsonToken;
-import com.google.gson.stream.JsonWriter;
-
-import javax.annotation.Nullable;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -23,335 +13,275 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.annotation.Nullable;
+
+import com.google.gson.JsonElement;
+import com.google.gson.JsonIOException;
+import com.google.gson.JsonNull;
+import com.google.gson.JsonSyntaxException;
+import com.google.gson.internal.Streams;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonToken;
+import com.google.gson.stream.JsonWriter;
+
 /**
  * @author LatvianModder
  */
-public class BackupUtils
-{
-	public static final long KB = 1024L;
-	public static final long MB = KB * 1024L;
-	public static final long GB = MB * 1024L;
-	public static final long TB = GB * 1024L;
+public class BackupUtils {
 
-	public static final double KB_D = 1024D;
-	public static final double MB_D = KB_D * 1024D;
-	public static final double GB_D = MB_D * 1024D;
-	public static final double TB_D = GB_D * 1024D;
+    public static final long KB = 1024L;
+    public static final long MB = KB * 1024L;
+    public static final long GB = MB * 1024L;
+    public static final long TB = GB * 1024L;
 
-	public static String getTimeString(long millis)
-	{
-		boolean neg = false;
-		if (millis < 0L)
-		{
-			neg = true;
-			millis = -millis;
-		}
+    public static final double KB_D = 1024D;
+    public static final double MB_D = KB_D * 1024D;
+    public static final double GB_D = MB_D * 1024D;
+    public static final double TB_D = GB_D * 1024D;
 
-		StringBuilder sb = new StringBuilder();
+    public static String getTimeString(long millis) {
+        boolean neg = false;
+        if (millis < 0L) {
+            neg = true;
+            millis = -millis;
+        }
 
-		if (millis < 1000L)
-		{
-			if (neg)
-			{
-				sb.append('-');
-			}
+        StringBuilder sb = new StringBuilder();
 
-			sb.append(millis);
-			sb.append('m');
-			sb.append('s');
-			return sb.toString();
-		}
+        if (millis < 1000L) {
+            if (neg) {
+                sb.append('-');
+            }
 
-		long secs = millis / 1000L;
+            sb.append(millis);
+            sb.append('m');
+            sb.append('s');
+            return sb.toString();
+        }
 
-		if (neg)
-		{
-			sb.append('-');
-		}
+        long secs = millis / 1000L;
 
-		long h = (secs / 3600L) % 24;
-		long m = (secs / 60L) % 60L;
-		long s = secs % 60L;
+        if (neg) {
+            sb.append('-');
+        }
 
-		if (secs >= 86400L)
-		{
-			sb.append(secs / 86400L);
-			sb.append('d');
-			sb.append(' ');
-		}
+        long h = (secs / 3600L) % 24;
+        long m = (secs / 60L) % 60L;
+        long s = secs % 60L;
 
-		if (h > 0 || secs >= 86400L)
-		{
-			if (h < 10)
-			{
-				sb.append('0');
-			}
-			sb.append(h);
-			//sb.append("h ");
-			sb.append(':');
-		}
+        if (secs >= 86400L) {
+            sb.append(secs / 86400L);
+            sb.append('d');
+            sb.append(' ');
+        }
 
-		if (m < 10)
-		{
-			sb.append('0');
-		}
-		sb.append(m);
-		//sb.append("m ");
-		sb.append(':');
-		if (s < 10)
-		{
-			sb.append('0');
-		}
-		sb.append(s);
-		//sb.append('s');
+        if (h > 0 || secs >= 86400L) {
+            if (h < 10) {
+                sb.append('0');
+            }
+            sb.append(h);
+            // sb.append("h ");
+            sb.append(':');
+        }
 
-		return sb.toString();
-	}
+        if (m < 10) {
+            sb.append('0');
+        }
+        sb.append(m);
+        // sb.append("m ");
+        sb.append(':');
+        if (s < 10) {
+            sb.append('0');
+        }
+        sb.append(s);
+        // sb.append('s');
 
-	public static long getSize(File file)
-	{
-		if (!file.exists())
-		{
-			return 0L;
-		}
-		else if (file.isFile())
-		{
-			return file.length();
-		}
-		else if (file.isDirectory())
-		{
-			long length = 0L;
-			File[] f1 = file.listFiles();
-			if (f1 != null && f1.length > 0)
-			{
-				for (File aF1 : f1)
-				{
-					length += getSize(aF1);
-				}
-			}
-			return length;
-		}
-		return 0L;
-	}
+        return sb.toString();
+    }
 
-	public static String getSizeString(double b)
-	{
-		if (b >= TB_D)
-		{
-			return String.format("%.1fTB", b / TB_D);
-		}
-		else if (b >= GB_D)
-		{
-			return String.format("%.1fGB", b / GB_D);
-		}
-		else if (b >= MB_D)
-		{
-			return String.format("%.1fMB", b / MB_D);
-		}
-		else if (b >= KB_D)
-		{
-			return String.format("%.1fKB", b / KB_D);
-		}
+    public static long getSize(File file) {
+        if (!file.exists()) {
+            return 0L;
+        } else if (file.isFile()) {
+            return file.length();
+        } else if (file.isDirectory()) {
+            long length = 0L;
+            File[] f1 = file.listFiles();
+            if (f1 != null && f1.length > 0) {
+                for (File aF1 : f1) {
+                    length += getSize(aF1);
+                }
+            }
+            return length;
+        }
+        return 0L;
+    }
 
-		return ((long) b) + "B";
-	}
+    public static String getSizeString(double b) {
+        if (b >= TB_D) {
+            return String.format("%.1fTB", b / TB_D);
+        } else if (b >= GB_D) {
+            return String.format("%.1fGB", b / GB_D);
+        } else if (b >= MB_D) {
+            return String.format("%.1fMB", b / MB_D);
+        } else if (b >= KB_D) {
+            return String.format("%.1fKB", b / KB_D);
+        }
 
-	public static String getSizeString(File file)
-	{
-		return getSizeString(getSize(file));
-	}
+        return ((long) b) + "B";
+    }
 
-	public static File newFile(File file)
-	{
-		if (!file.exists())
-		{
-			try
-			{
-				File parent = file.getParentFile();
-				if (!parent.exists())
-				{
-					parent.mkdirs();
-				}
-				file.createNewFile();
-			}
-			catch (Exception e)
-			{
-				e.printStackTrace();
-			}
-		}
+    public static String getSizeString(File file) {
+        return getSizeString(getSize(file));
+    }
 
-		return file;
-	}
+    public static File newFile(File file) {
+        if (!file.exists()) {
+            try {
+                File parent = file.getParentFile();
+                if (!parent.exists()) {
+                    parent.mkdirs();
+                }
+                file.createNewFile();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
 
-	public static List<File> listTree(File file)
-	{
-		List<File> l = new ArrayList<>();
-		listTree0(l, file);
-		return l;
-	}
+        return file;
+    }
 
-	public static void listTree0(List<File> list, File file)
-	{
-		if (file.isDirectory())
-		{
-			File[] fl = file.listFiles();
+    public static List<File> listTree(File file) {
+        List<File> l = new ArrayList<>();
+        listTree0(l, file);
+        return l;
+    }
 
-			if (fl != null && fl.length > 0)
-			{
-				for (File aFl : fl)
-				{
-					listTree0(list, aFl);
-				}
-			}
-		}
-		else if (file.isFile())
-		{
-			list.add(file);
-		}
-	}
+    public static void listTree0(List<File> list, File file) {
+        if (file.isDirectory()) {
+            File[] fl = file.listFiles();
 
-	public static void copyFile(File src, File dst) throws Exception
-	{
-		if (src.exists() && !src.equals(dst))
-		{
-			if (src.isDirectory() && dst.isDirectory())
-			{
-				for (File f : listTree(src))
-				{
-					File dst1 = new File(dst.getAbsolutePath() + File.separatorChar + (f.getAbsolutePath().replace(src.getAbsolutePath(), "")));
-					copyFile(f, dst1);
-				}
-			}
-			else
-			{
-				dst = newFile(dst);
+            if (fl != null && fl.length > 0) {
+                for (File aFl : fl) {
+                    listTree0(list, aFl);
+                }
+            }
+        } else if (file.isFile()) {
+            list.add(file);
+        }
+    }
 
-				try (FileInputStream fis = new FileInputStream(src);
-					 FileOutputStream fos = new FileOutputStream(dst);
-					 FileChannel srcC = fis.getChannel();
-					 FileChannel dstC = fos.getChannel())
-				{
-					dstC.transferFrom(srcC, 0L, srcC.size());
-				}
-			}
-		}
-	}
+    public static void copyFile(File src, File dst) throws Exception {
+        if (src.exists() && !src.equals(dst)) {
+            if (src.isDirectory() && dst.isDirectory()) {
+                for (File f : listTree(src)) {
+                    File dst1 = new File(
+                            dst.getAbsolutePath() + File.separatorChar
+                                    + (f.getAbsolutePath().replace(src.getAbsolutePath(), "")));
+                    copyFile(f, dst1);
+                }
+            } else {
+                dst = newFile(dst);
 
-	public static boolean delete(File file)
-	{
-		if (!file.exists())
-		{
-			return false;
-		}
-		else if (file.isFile())
-		{
-			return file.delete();
-		}
+                try (FileInputStream fis = new FileInputStream(src);
+                        FileOutputStream fos = new FileOutputStream(dst);
+                        FileChannel srcC = fis.getChannel();
+                        FileChannel dstC = fos.getChannel()) {
+                    dstC.transferFrom(srcC, 0L, srcC.size());
+                }
+            }
+        }
+    }
 
-		String[] files = file.list();
+    public static boolean delete(File file) {
+        if (!file.exists()) {
+            return false;
+        } else if (file.isFile()) {
+            return file.delete();
+        }
 
-		if (files != null)
-		{
-			for (String s : files)
-			{
-				delete(new File(file, s));
-			}
-		}
+        String[] files = file.list();
 
-		return file.delete();
-	}
+        if (files != null) {
+            for (String s : files) {
+                delete(new File(file, s));
+            }
+        }
 
-	public static void toJson(Writer writer, @Nullable JsonElement element, boolean prettyPrinting)
-	{
-		if (element == null || element.isJsonNull())
-		{
-			try
-			{
-				writer.write("null");
-			}
-			catch (Exception ex)
-			{
-				ex.printStackTrace();
-			}
+        return file.delete();
+    }
 
-			return;
-		}
+    public static void toJson(Writer writer, @Nullable JsonElement element, boolean prettyPrinting) {
+        if (element == null || element.isJsonNull()) {
+            try {
+                writer.write("null");
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
 
-		JsonWriter jsonWriter = new JsonWriter(writer);
-		jsonWriter.setLenient(true);
-		jsonWriter.setHtmlSafe(false);
-		jsonWriter.setSerializeNulls(true);
+            return;
+        }
 
-		if (prettyPrinting)
-		{
-			jsonWriter.setIndent("\t");
-		}
+        JsonWriter jsonWriter = new JsonWriter(writer);
+        jsonWriter.setLenient(true);
+        jsonWriter.setHtmlSafe(false);
+        jsonWriter.setSerializeNulls(true);
 
-		try
-		{
-			Streams.write(element, jsonWriter);
-		}
-		catch (Exception ex)
-		{
-			throw new JsonIOException(ex);
-		}
-	}
+        if (prettyPrinting) {
+            jsonWriter.setIndent("\t");
+        }
 
-	public static void toJson(File file, @Nullable JsonElement element, boolean prettyPrinting)
-	{
-		try (OutputStreamWriter output = new OutputStreamWriter(new FileOutputStream(newFile(file)), StandardCharsets.UTF_8);
-			 BufferedWriter writer = new BufferedWriter(output))
-		{
-			toJson(writer, element, prettyPrinting);
-		}
-		catch (Exception ex)
-		{
-			ex.printStackTrace();
-		}
-	}
+        try {
+            Streams.write(element, jsonWriter);
+        } catch (Exception ex) {
+            throw new JsonIOException(ex);
+        }
+    }
 
-	public static JsonElement readJson(File file)
-	{
-		if (!file.exists())
-		{
-			return JsonNull.INSTANCE;
-		}
+    public static void toJson(File file, @Nullable JsonElement element, boolean prettyPrinting) {
+        try (OutputStreamWriter output = new OutputStreamWriter(
+                new FileOutputStream(newFile(file)),
+                StandardCharsets.UTF_8); BufferedWriter writer = new BufferedWriter(output)) {
+            toJson(writer, element, prettyPrinting);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+    }
 
-		try (BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(file), StandardCharsets.UTF_8)))
-		{
-			JsonReader jsonReader = new JsonReader(reader);
-			jsonReader.setLenient(true);
-			JsonElement element = Streams.parse(jsonReader);
+    public static JsonElement readJson(File file) {
+        if (!file.exists()) {
+            return JsonNull.INSTANCE;
+        }
 
-			if (!element.isJsonNull() && jsonReader.peek() != JsonToken.END_DOCUMENT)
-			{
-				throw new JsonSyntaxException("Did not consume the entire document.");
-			}
+        try (BufferedReader reader = new BufferedReader(
+                new InputStreamReader(new FileInputStream(file), StandardCharsets.UTF_8))) {
+            JsonReader jsonReader = new JsonReader(reader);
+            jsonReader.setLenient(true);
+            JsonElement element = Streams.parse(jsonReader);
 
-			return element;
-		}
-		catch (Exception ex)
-		{
-			return null;
-		}
-	}
+            if (!element.isJsonNull() && jsonReader.peek() != JsonToken.END_DOCUMENT) {
+                throw new JsonSyntaxException("Did not consume the entire document.");
+            }
 
-	public static String removeAllWhitespace(String s)
-	{
-		char[] chars = new char[s.length()];
-		int j = 0;
+            return element;
+        } catch (Exception ex) {
+            return null;
+        }
+    }
 
-		for (int i = 0; i < chars.length; i++)
-		{
-			char c = s.charAt(i);
+    public static String removeAllWhitespace(String s) {
+        char[] chars = new char[s.length()];
+        int j = 0;
 
-			if (c > ' ')
-			{
-				chars[j] = c;
-				j++;
-			}
-		}
+        for (int i = 0; i < chars.length; i++) {
+            char c = s.charAt(i);
 
-		return new String(chars, 0, j);
-	}
+            if (c > ' ') {
+                chars[j] = c;
+                j++;
+            }
+        }
+
+        return new String(chars, 0, j);
+    }
 }
